@@ -46,9 +46,27 @@ MQTTCommunicator mQTTC(
     pubSubClient, tMG,
     SETTINGS_DATA_MQTT_BROKER_URL, SETTINGS_DATA_MQTT_PORT_1883,
     SETTINGS_DATA_MQTT_USERNAME, SETTINGS_DATA_MQTT_PASSWORD,
-    SETTINGS_DATA_MQTT_PUBLISHED_TOPIC_ACTUATOR_ACTION,
     SETTINGS_DATA_MQTT_PUBLISHED_TOPIC_TEMPERATURE_CELCIUS,
     SETTINGS_DATA_MQTT_PUBLISHED_TOPIC_HUMIDITY_PERCENT);
+
+
+unsigned long previousCollectedDataMillis;
+
+void collectData() {
+
+    unsigned long currentMillis = millis();
+
+    previousCollectedDataMillis = previousCollectedDataMillis < currentMillis ? previousCollectedDataMillis : 0;
+
+    bool timeIsDueToCollectData = currentMillis - previousCollectedDataMillis > SETTINGS_SENSOR_DURATION_BETWEEN_EVERY_DATA_COLLECTION_MS;
+
+    if (timeIsDueToCollectData) {
+        currentMeterData.temperatureC = dht.readTemperature();
+        currentMeterData.humidityPercent= dht.readHumidity();
+        
+        previousCollectedDataMillis = currentMillis;
+    }
+}
 
 void reportData() {
 
@@ -58,9 +76,8 @@ void reportData() {
     if (temperatureCHasChanged || humidityPercentHasChanged) {
 
         mQTTC.reportTempAndHumidity(currentMeterData);
-
+        currentMeterData = previousMeterData;
     }
-
 };
 
 void setup() {
@@ -70,50 +87,27 @@ void setup() {
 
     onboardLED.initialize();
 
+    previousCollectedDataMillis = 0;
+
     blinker.initialize();
     blinker.start();
 
     dht.begin();
+    delay(500);            // And wait for half a second.
+    
+    wifiManager.initialize();
+    webserver.initialize();
+    mQTTC.initialize();
 }
  
 void loop() {
     wifiManager.monitorWiFi();
     webserver.handleClient();
-    // Wait a few seconds between measurements.
-    delay(2000);
 
-    // Reading temperature or humidity takes about 250 milliseconds!
-    // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-    float h = dht.readHumidity();
-    // Read temperature as Celsius (the default)
-    float t = dht.readTemperature();
-    // Read temperature as Fahrenheit (isFahrenheit = true)
-    float f = dht.readTemperature(true);
-/*
-    // Check if any reads failed and exit early (to try again).
-    if (isnan(h) || isnan(t) || isnan(f)) {
-        Serial.println(F("Failed to read from DHT sensor!"));
-        return;
-    }
-    */
+    collectData();
+    reportData();
 
-    // Compute heat index in Fahrenheit (the default)
-    float hif = dht.computeHeatIndex(f, h);
-    // Compute heat index in Celsius (isFahreheit = false)
-    float hic = dht.computeHeatIndex(t, h, false);
-
-    Serial.print(F(" Humidity: "));
-    Serial.print(h);
-    Serial.print(F("%  Temperature: "));
-    Serial.print(t);
-    Serial.print(F("C "));
-    Serial.print(f);
-    Serial.print(F("F  Heat index: "));
-    Serial.print(hic);
-    Serial.print(F("C "));
-    Serial.print(hif);
-    Serial.println(F("F"));
-
+    blinker.handleBlinker();
 
     if (wifiManager.isConnectedToWifi()) {
         if (!mQTTC.isConnectedToMQTTBroker()) {
@@ -123,4 +117,3 @@ void loop() {
     }
 }
  
-
