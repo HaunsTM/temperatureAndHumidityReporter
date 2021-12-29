@@ -3,9 +3,10 @@
 #include <ESP8266WiFi.h>
 #include "MQTTCommunicator.h"
 #include <PubSubClient.h>
+#include "TemperatureAndHumidityData.h"
 #include "TextMessageGenerator.h"
 
-MQTTCommunicator::MQTTCommunicator(PubSubClient& pubSubClient, TextMessageGenerator& tMG, String mqttBrokerURL, int mqttPort, String mqttUsername, String mqttPassword, String mqttPublishTopicActuatorAction, String mqttPublishTopicHatchLidarDistanceToObjectCm, String mqttPublishTopicHatchLidarStrengthOrQualityOfReturnSignal, String mqttPublishTopicHatchLidarTemperatureInternalOfLidarSensorChipCelsius)
+MQTTCommunicator::MQTTCommunicator(PubSubClient& pubSubClient, TextMessageGenerator& tMG, String mqttBrokerURL, int mqttPort, String mqttUsername, String mqttPassword, String mqttPublishTopicTemperatureC, String mqttPublishTopicHumidityPercent)
     :   
         _pubSubClient(pubSubClient),
         _tMG(tMG)
@@ -15,10 +16,8 @@ MQTTCommunicator::MQTTCommunicator(PubSubClient& pubSubClient, TextMessageGenera
     _mqttUsername = mqttUsername;
     _mqttPassword = mqttPassword;
 
-    _mqttPublishTopicActuatorAction = mqttPublishTopicActuatorAction;
-    _mqttPublishTopicHatchLidarDistanceToObjectCm = mqttPublishTopicHatchLidarDistanceToObjectCm;
-    _mqttPublishTopicHatchLidarStrengthOrQualityOfReturnSignal = mqttPublishTopicHatchLidarStrengthOrQualityOfReturnSignal;
-    _mqttPublishTopicHatchLidarTemperatureInternalOfLidarSensorChipCelsius = mqttPublishTopicHatchLidarTemperatureInternalOfLidarSensorChipCelsius;
+    _mqttPublishTopicTemperatureC = mqttPublishTopicTemperatureC;
+    _mqttPublishTopicHumidityPercent = mqttPublishTopicHumidityPercent;
 
     _initialized = false;
 }
@@ -52,7 +51,7 @@ void MQTTCommunicator::mqttReceived(char* topic, byte* payload, unsigned int len
 }
 
 String MQTTCommunicator::randomMQTTClientId() {
-    String randomMQTTClientId = "Chicken House Hatch - MQTTCommunicator MQTT clientId: ";
+    String randomMQTTClientId = "Temperature and Humidity - MQTTCommunicator MQTT clientId: ";
     randomMQTTClientId += String(random(0xffff), HEX);
 
     return randomMQTTClientId;
@@ -80,4 +79,9 @@ void MQTTCommunicator::connectToMQTTBroker() {
 
 /* Report functions */
 
+void MQTTCommunicator::reportTempAndHumidity(TemperatureAndHumidityData currentMeterData) {
+
+    _pubSubClient.publish(_mqttPublishTopicTemperatureC.c_str(), String(currentMeterData.temperatureC).c_str() );
+    _pubSubClient.publish(_mqttPublishTopicHumidityPercent.c_str(), String(currentMeterData.humidityPercent).c_str() );
+};
 

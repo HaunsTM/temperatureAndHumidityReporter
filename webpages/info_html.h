@@ -1,0 +1,241 @@
+
+#ifndef INFO_HTML_H
+#define INFO_HTML_H
+
+
+const char INFO_HTML[] PROGMEM = R"=====(
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Device info - Chicken house hatch</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" href="/styleSimple_css">
+</head>
+<body>
+    <h1 class="title">Device info - Chicken house hatch</h1>
+    <h2>Software</h2>
+    <p>This software is intended for Arduino and compatible PLCs. The purpose is to use the PLC to enable control of a linear actuator (12 volt DC motor) via wifi / via pushbuttons, where the ultimate goal is to hoist up / down a guillotine - type door to open / close the entrance to a chicken house.</p>
+    <h3>Device</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Firmware version</td>
+                <td><span data-bind="text: device.firmwareVersion"></span></td>
+            </tr>        
+            <tr>
+                <td>MAC address</td>
+                <td><span data-bind="text: device.macAddress"></span></td>
+            </tr>
+            <tr>
+                <td>Serial monitor communication speed</td>
+                <td><span data-bind="text: device.serialMonitorBaud"></span></td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>Wifi</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Channel</td>
+                <td><span data-bind="text: wifi.channel"></span></td>
+            </tr>
+            <tr>
+                <td>IP</td>
+                <td><span data-bind="text: wifi.localIP"></span></td>
+            </tr>
+            <tr>
+                <td>SSID</td>
+                <td><span data-bind="text: wifi.SSID"></span></td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>HTTP requests</h3>
+    <h4>Controls</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>HTTP request</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><a data-bind="attr: { href: computed.href.closeHatch }"><span data-bind="text: computed.href.closeHatch"></span></td>
+                <td>Close hatch</td>
+            </tr>
+            <tr>
+                <td><a data-bind="attr: { href: computed.href.openHatch }"><span data-bind="text: computed.href.openHatch"></td>
+                <td>Open hatch</td>
+            </tr>
+            <tr>
+                <td><a data-bind="attr: { href: computed.href.pullActuator }"><span data-bind="text: computed.href.pullActuator"></td>
+                <td>Contracting actuator piston</td>
+            </tr>
+            <tr>
+                <td><a data-bind="attr: { href: computed.href.stopActuator }"><span data-bind="text: computed.href.stopActuator"></td>
+                <td>Stop actuator engine</td>
+            </tr>
+            <tr>
+                <td><a data-bind="attr: { href: computed.href.pushActuator }"><span data-bind="text: computed.href.pushActuator"></td>
+                <td>Extends actuator piston</td>
+            </tr>
+        </tbody>
+    </table>
+    <h4>Other</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>HTTP request</th>
+                <th>Expected response</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <a data-bind="attr: { href: computed.href.lidarSensorData }"><span data-bind="text: computed.href.lidarSensorData"></a>
+                        <br /><br />
+                    Get current read measurement from LIDAR detector in a JSON:<br />
+                </td>
+                <td>
+<pre>{
+    "distanceToObjectCm":"xxx",
+    "strengthOrQualityOfReturnSignal":"yyy",
+    "temperatureInternalOfLidarSensorChipCelsius":"zzz"
+}</pre>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>MQTT</h3>
+    <h4>Settings</h4>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Host</td>
+                <td><span data-bind="text: mqtt.hostname"></span></td>
+            </tr>
+            <tr>
+                <td>Port</td>
+                <td><span data-bind="text: mqtt.port"></span></td>
+            </tr>
+            <tr>
+                <td>Username</td>
+                <td><span data-bind="text: mqtt.connectionOptions.userName"></span></td>
+            </tr>
+            <tr>
+                <td>Password</td>
+                <td><span data-bind="text: mqtt.connectionOptions.password"></span></td>
+            </tr>
+        </tbody>
+    </table>
+    <h4>Topics</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Topic</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Action {UP, TURN_OFF, DOWN}</code></td>
+                <td><code><span data-bind="text: mqtt.publishTopics.actuatorAction"></span></code></td>
+            </tr>
+            <tr>
+                <td>Distance to target in centimeters/millimeters. Range: <code>0 - 1200</code></td>
+                <td><code><span data-bind="text: mqtt.publishTopics.lidarDistanceToObjectCm"></span></code></td>
+            </tr>
+            <tr>
+                <td>Strength quality of returned signal in arbitrary units. Range: <code>-1, 0 - 32767</code></td>
+                <td><code><span data-bind="text: mqtt.publishTopics.lidarStrengthOrQualityOfReturnSignal"></span></td>
+            </tr>
+            <tr>
+                <td>Temperature of LIDAR sensor chip, range: <code>-25 &deg;C - 125 &deg;C</code></td>
+                <td><code><span data-bind="text: mqtt.publishTopics.lidarTemperatureInternalOfLidarSensorChipCelsius"></span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <nav class="navigation-links"><div><a data-bind="attr: { href: computed.href.controls }">Controls </a></div><div>|</div><div><a data-bind="attr: { href: computed.href.info }">Device info</a></div></nav>
+    <div class="info">
+        <p>This software is distributed under <a href = "https://en.wikipedia.org/wiki/MIT_License">MIT License</a>. Source code on <a href="https://github.com/HaunsTM">Github - HaunsTM</a></p>
+    </div>
+    
+    <script src="/javascriptKnockout_js">
+    </script>
+
+    <script src="/constJavascriptParameters_js">
+    </script>
+
+    <script>
+        function viewModelKnockout() {
+            const _self = this;
+            
+            _self.device = {
+                firmwareVersion: ko.observable(constJavascriptParameters.device.firmwareVersion),
+                macAddress: ko.observable(constJavascriptParameters.device.macAddress),
+                serialMonitorBaud: ko.observable(constJavascriptParameters.device.serialMonitorBaud),
+            };
+            _self.mqtt = {
+                publishTopics: {
+                    actuatorAction: ko.observable(constJavascriptParameters.mqtt.publishTopics.actuatorAction),
+                    lidarDistanceToObjectCm: ko.observable(constJavascriptParameters.mqtt.publishTopics.lidarDistanceToObjectCm),
+                    lidarStrengthOrQualityOfReturnSignal: ko.observable(constJavascriptParameters.mqtt.publishTopics.lidarStrengthOrQualityOfReturnSignal),
+                    lidarTemperatureInternalOfLidarSensorChipCelsius: ko.observable(constJavascriptParameters.mqtt.publishTopics.lidarTemperatureInternalOfLidarSensorChipCelsius),
+                },
+                hostname: ko.observable(constJavascriptParameters.mqtt.hostname),
+                clientId: ko.observable(constJavascriptParameters.mqtt.clientId),
+                connectionOptions: {
+                    userName: ko.observable(constJavascriptParameters.mqtt.connectionOptions.userName),
+                    password: ko.observable(constJavascriptParameters.mqtt.connectionOptions.password),
+                    keepAliveInterval: ko.observable(constJavascriptParameters.mqtt.connectionOptions.keepAliveInterval),
+                },
+                port: ko.observable(constJavascriptParameters.mqtt.port)
+            };
+            _self.wifi = {
+                channel: ko.observable(constJavascriptParameters.wifi.channel),
+                localIP: ko.observable(constJavascriptParameters.wifi.localIP),
+                SSID: ko.observable(constJavascriptParameters.wifi.SSID),
+            };
+            _self.computed = (function () {                
+                return {
+                    href: {
+                        base: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/" ; }),
+                        closeHatch: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/closeHatch" ; }),
+                        controls: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/" ; }),
+                        info: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/info" }),
+                        lidarSensorData: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/lidarSensorData" }),
+                        pullActuator: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/pullActuator" }),
+                        pushActuator: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/pushActuator" }),
+                        stopActuator: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/stopActuator" }),
+                    }
+                }
+            })();
+            return _self;
+        };
+        ko.applyBindings(viewModelKnockout);
+    </script>
+</body>
+</html>
+)=====";
+
+#endif

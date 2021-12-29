@@ -1,4 +1,5 @@
 #include <PubSubClient.h>
+#include "TemperatureAndHumidityData.h"
 #include "TextMessageGenerator.h"
 
 #ifndef MQTT_COMMUNICATOR_H
@@ -13,10 +14,8 @@ private:
     String _mqttUsername;
     String _mqttPassword;
 
-    String _mqttPublishTopicActuatorAction;
-    String _mqttPublishTopicHatchLidarDistanceToObjectCm;
-    String _mqttPublishTopicHatchLidarStrengthOrQualityOfReturnSignal;
-    String _mqttPublishTopicHatchLidarTemperatureInternalOfLidarSensorChipCelsius;
+    String _mqttPublishTopicTemperatureC;
+    String _mqttPublishTopicHumidityPercent;
 
     bool _initialized;
 
@@ -26,8 +25,8 @@ private:
     String randomMQTTClientId();
 
 public:
-    MQTTCommunicator(PubSubClient& pubSubClient, TextMessageGenerator& tMG, String mqttBrokerURL, int mqttPort, String mqttUsername, String mqttPassword, String _mqttPublishTopicActuatorAction, String _mqttPublishTopicHatchLidarDistanceToObjectCm, String _mqttPublishTopicHatchLidarStrengthOrQualityOfReturnSignal, String _mqttPublishTopicHatchLidarTemperatureInternalOfLidarSensorChipCelsius);
-    
+    MQTTCommunicator(PubSubClient& pubSubClient, TextMessageGenerator& tMG, String mqttBrokerURL, int mqttPort, String mqttUsername, String mqttPassword, String mqttPublishTopicTemperatureC, String mqttPublishTopicHumidityPercent);
+
     ~MQTTCommunicator();
 
     void initialize();
@@ -39,6 +38,8 @@ public:
     void mqttReceived(char* topic, byte* payload, unsigned int length);
 
     void connectToMQTTBroker();
+    
+    void reportTempAndHumidity(TemperatureAndHumidityData currentMeterData);
 
 };
 

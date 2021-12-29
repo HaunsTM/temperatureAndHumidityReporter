@@ -1,0 +1,300 @@
+
+#ifndef CONTROLS_HTML_H
+#define CONTROLS_HTML_H
+
+
+const char CONTROLS_HTML[] PROGMEM = R"=====(
+    <!DOCTYPE html>
+<html>
+<head>
+    <title>Controls - Chicken house hatch</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" href="/styleSimple_css">
+</head>
+<body>
+    <h1 class="title">Controls - Chicken house hatch</h1>
+    <h3>Hatch processes</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Process</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><button id='btnOpenHatch' type='button' class="button-symbol">&UpArrowBar;</button></td>
+                <td>Open hatch</td>
+            </tr>
+            <tr>
+                <td><button id='btnCloseHatch' type='button' class="button-symbol">&DownArrowBar;</button></td>
+                <td>Close hatch</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>Actuator control</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Direction</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><button id="btnPull" type="button" class="button-symbol">&#x21e7;</button></td>
+                <td>Contracting actuator piston</td>
+            </tr>
+            <tr>
+                <td><button id="btnTurnOff" type="button" class="button-symbol">&#x220E;</button></td>
+                <td>Stop actuator engine</td>
+            </tr>
+            <tr>
+                <td><button id="btnPush" type="button" class="button-symbol">&#x21e9;</button></td>
+                <td>Extends actuator piston</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>Detector</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Value</th>
+                <th>Measurement description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span id="spanLidarDistanceToObjectCm"></span></td>
+                <td>Distance to object from LIDAR sensor</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <nav class="navigation-links"><div><a data-bind="attr: { href: computed.href.controls }">Controls </a></div><div>|</div><div><a data-bind="attr: { href: computed.href.info }">Device info</a></div></nav>
+    <div class="info">
+        <p>This software is distributed under <a href = "https://en.wikipedia.org/wiki/MIT_License">MIT License</a>. Source code on <a href="https://github.com/HaunsTM">Github - HaunsTM</a></p>
+    </div>
+    
+    <script src="/javascriptAxios_js">
+    </script>
+
+    <script src="/javascriptPaho_js">
+    </script>
+
+    <script src="/constJavascriptParameters_js">
+    </script>
+    
+    <script src="/javascriptKnockout_js">
+    </script>
+
+    <script>
+        function viewModelKnockout() {
+            const _self = this;
+            
+            _self.device = {
+                firmwareVersion: ko.observable(constJavascriptParameters.device.firmwareVersion),
+                macAddress: ko.observable(constJavascriptParameters.device.macAddress),
+                serialMonitorBaud: ko.observable(constJavascriptParameters.device.serialMonitorBaud),
+            };
+            _self.mqtt = {
+                publishTopics: {
+                    actuatorAction: ko.observable(constJavascriptParameters.mqtt.publishTopics.actuatorAction),
+                    lidarDistanceToObjectCm: ko.observable(constJavascriptParameters.mqtt.publishTopics.lidarDistanceToObjectCm),
+                    lidarStrengthOrQualityOfReturnSignal: ko.observable(constJavascriptParameters.mqtt.publishTopics.lidarStrengthOrQualityOfReturnSignal),
+                    lidarTemperatureInternalOfLidarSensorChipCelsius: ko.observable(constJavascriptParameters.mqtt.publishTopics.lidarTemperatureInternalOfLidarSensorChipCelsius),
+                },
+                hostname: ko.observable(constJavascriptParameters.mqtt.hostname),
+                clientId: ko.observable(constJavascriptParameters.mqtt.clientId),
+                connectionOptions: {
+                    userName: ko.observable(constJavascriptParameters.mqtt.connectionOptions.userName),
+                    password: ko.observable(constJavascriptParameters.mqtt.connectionOptions.password),
+                    keepAliveInterval: ko.observable(constJavascriptParameters.mqtt.connectionOptions.keepAliveInterval),
+                },
+                port: ko.observable(constJavascriptParameters.mqtt.port)
+            };
+            _self.wifi = {
+                channel: ko.observable(constJavascriptParameters.wifi.channel),
+                localIP: ko.observable(constJavascriptParameters.wifi.localIP),
+                SSID: ko.observable(constJavascriptParameters.wifi.SSID),
+            };
+            _self.computed = (function () {                
+                return {
+                    href: {
+                        base: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/" ; }),
+                        closeHatch: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/closeHatch" ; }),
+                        controls: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/" ; }),
+                        info: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/info" }),
+                        lidarSensorData: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/lidarSensorData" }),
+                        openHatch: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/openHatch" ; }),
+                        pullActuator: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/pullActuator" }),
+                        pushActuator: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/pushActuator" }),
+                        stopActuator: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/stopActuator" }),
+                    }
+                }
+            })();
+            return _self;
+        };
+        ko.applyBindings(viewModelKnockout);
+    </script>
+    <script>
+
+        const grpPressButtons = [
+            {'id': 'btnOpenHatch', 'urlStart': 'openHatch'},
+            {'id': 'btnCloseHatch', 'urlStart': 'closeHatch'},
+            {'id': 'btnPull', 'urlStart': 'pullActuator', 'urlEnd': 'stopActuator'},
+            {'id': 'btnPush', 'urlStart': 'pushActuator', 'urlEnd': 'stopActuator'},
+            {'id': 'btnTurnOff', 'urlStart': 'stopActuator', 'urlEnd': 'stopActuator'}
+        ];
+        
+        const Timer = (ms) => {
+            let id;
+            const start = () => new Promise(
+                resolve => {
+                    if (id === -1) {
+                        throw new Error('Timer already aborted');
+                    }
+                    id = setTimeout(resolve, ms);
+                }
+            );
+
+            const abort = () => {
+                if (id !== -1 || id === undefined) {
+                    clearTimeout(id);
+                    id = -1;
+                }
+            };
+
+            return {start, abort}
+        };
+
+        const removeAllButtonsStatusClasses = () => {
+            for (let i = 0; i < grpPressButtons.length; i++) {                
+                let button = document.getElementById(grpPressButtons[i].id);
+                button.classList.remove('button-success', 'button-remove');
+            }
+        };
+        
+        const setButtonClass = async (buttonId, success, timeoutResponseStatusColorOnButton) => {
+            const button = document.getElementById(buttonId);
+            
+            removeAllButtonsStatusClasses();
+
+            const statusClass = success ? 'button-success' : 'button-error';
+
+            if (timeoutResponseStatusColorOnButton) {
+                const addPause = Timer(3*1000);
+                button.classList.add(statusClass);
+                await addPause.start();
+                button.classList.remove(statusClass);
+            } else {                
+                button.classList.add(statusClass);
+            }
+        };
+
+        const callAPIFromButton = async (e, endpointAction, timeoutResponseStatusColorOnButton) => {
+
+            try {
+                const endpoint = `//${constJavascriptParameters.wifi.localIP}/${endpointAction}`;
+                const response = await axios.get(endpoint);
+                return response;
+            } catch (errors) {
+                console.error(errors);
+            }
+        };
+
+        const setUpEventHandler = (pressButton) => {
+
+            let button = document.getElementById(pressButton.id);
+
+            button.urlStart = pressButton.urlStart;
+            button.addEventListener('touchstart', handleButtonPress, {passive: false});
+            button.addEventListener('mousedown', handleButtonPress);
+
+            if (pressButton.urlEnd) {
+                button.urlEnd = pressButton.urlEnd;
+                button.addEventListener('touchend', handleButtonRelease, {passive: false});
+                button.addEventListener('mouseup', handleButtonRelease);
+            }
+        };
+
+        const handleButtonPress = (e) => {
+            callAPIFromButton(e, e.currentTarget.urlStart, true);
+            e.stopPropagation();
+            e.preventDefault();
+        };
+
+        const handleButtonRelease = (e) => {
+            callAPIFromButton(e, e.currentTarget.urlEnd, true);
+            e.stopPropagation();
+            e.preventDefault();
+        };
+
+        grpPressButtons.forEach( 
+            (pressButton, index, array) => { setUpEventHandler(pressButton); }
+        );
+
+// MQTT
+        // called when the client connects
+        const onConnect = () => {
+            client.subscribe(constJavascriptParameters.mqtt.publishTopics.lidarDistanceToObjectCm);
+            client.subscribe(constJavascriptParameters.mqtt.publishTopics.actuatorAction);
+        }
+
+        // called when the client loses its connection
+        const onConnectionLost = async (responseObject) => {
+            if (responseObject.errorCode !== 0) {
+                console.log(`Failed in connection with MQTT-broker: ${responseObject.errorMessage}`);
+            }
+        }
+
+        // called when a message arrives
+        const onMessageArrived = async (message) => {
+            const topic = message.destinationName;
+            switch (topic) {
+                case constJavascriptParameters.mqtt.publishTopics.lidarDistanceToObjectCm:
+                    document.getElementById('spanLidarDistanceToObjectCm').textContent = message.payloadString;                
+                    break;
+                case constJavascriptParameters.mqtt.publishTopics.actuatorAction:
+                    removeAllButtonsStatusClasses();
+                    switch (message.payloadString) {
+                        case 'PULL':
+                            await setButtonClass('btnPull', true, false);
+                            break;
+                        case 'TURN_OFF':
+                            await setButtonClass('btnTurnOff', true, true);
+                            break;
+                        case 'PUSH':
+                            await setButtonClass('btnPush', true, false);
+                            break;
+                        default:
+                            console.error(`Unknown Actuator action: ${topic}`);
+                            break;
+                    }
+                    break;
+                default:
+                    console.error(`Unknown MQTT-topic: ${topic}`);
+                    break;
+            }
+
+        }   
+
+        // Create a client instance
+        client = new Paho.MQTT.Client(constJavascriptParameters.mqtt.hostname, Number(constJavascriptParameters.mqtt.port), '/', constJavascriptParameters.mqtt.clientId);
+
+        constJavascriptParameters.mqtt.connectionOptions.onSuccess = onConnect;
+        // connect the client
+        client.connect(constJavascriptParameters.mqtt.connectionOptions);
+        
+        // set callback handlers
+        client.onConnectionLost = onConnectionLost;
+        client.onMessageArrived = onMessageArrived;
+
+    
+    </script>
+</body>
+</html>
+)=====";
+
+#endif

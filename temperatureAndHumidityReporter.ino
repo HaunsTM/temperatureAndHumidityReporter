@@ -2,21 +2,67 @@
 #include "Blinker.h"
 #include <DHT.h>
 #include <ESP8266WiFi.h>
+#include "HTTPWebServer.h"
+#include "MQTTCommunicator.h"
 #include "Pins.h"
+#include <PubSubClient.h>
 #include "SettingsData.h"
+#include "TemperatureAndHumidityData.h"
+#include "TextMessageGenerator.h"
+#include "WifiManager.h"
  
 #define DHTPIN PIN_D4_GPIO2 //pin gpio 2 in sensor
-#define DHTTYPE DHT22 // DHT 22 Change this if you have a DHT11
+#define DHTTYPE DHT22 // DHT 22 Change
  
 DHT dht(DHTPIN, DHTTYPE);
- 
+
+TemperatureAndHumidityData currentMeterData;
+TemperatureAndHumidityData previousMeterData;
+
 OnboardLED onboardLED;
 Blinker blinker(onboardLED);
- 
-float t,h;
-unsigned long previousMillis = 0; // will store last temp was read
-const long interval = 2000; // interval at which to read sensor
- 
+
+TextMessageGenerator tMG(
+    SETTINGS_DATA_FIRMWARE_VERSION, SETTINGS_DATA_SERIAL_MONITOR_BAUD,
+    SETTINGS_DATA_MQTT_BROKER_URL, SETTINGS_DATA_MQTT_PORT_1883,
+    SETTINGS_DATA_MQTT_USERNAME, SETTINGS_DATA_MQTT_PASSWORD);
+
+WifiManager wifiManager( tMG, CREDENTIALS_JSON_STRING);
+
+WiFiClient wifiClient;
+PubSubClient pubSubClient(wifiClient);
+ESP8266WebServer eSP8266WebServer(SETTINGS_DATA_WEB_SERVER_PORT);
+
+HTTPWebServer webserver(
+    eSP8266WebServer,
+    tMG, currentMeterData,
+    SETTINGS_DATA_MQTT_BROKER_URL,
+    SETTINGS_DATA_MQTT_PORT_FOR_PAHO_1884,
+    SETTINGS_DATA_MQTT_USERNAME, SETTINGS_DATA_MQTT_PASSWORD,
+    SETTINGS_DATA_MQTT_PUBLISHED_TOPIC_TEMPERATURE_CELCIUS,
+    SETTINGS_DATA_MQTT_PUBLISHED_TOPIC_HUMIDITY_PERCENT);
+
+MQTTCommunicator mQTTC(
+    pubSubClient, tMG,
+    SETTINGS_DATA_MQTT_BROKER_URL, SETTINGS_DATA_MQTT_PORT_1883,
+    SETTINGS_DATA_MQTT_USERNAME, SETTINGS_DATA_MQTT_PASSWORD,
+    SETTINGS_DATA_MQTT_PUBLISHED_TOPIC_ACTUATOR_ACTION,
+    SETTINGS_DATA_MQTT_PUBLISHED_TOPIC_TEMPERATURE_CELCIUS,
+    SETTINGS_DATA_MQTT_PUBLISHED_TOPIC_HUMIDITY_PERCENT);
+
+void reportData() {
+
+    bool temperatureCHasChanged = currentMeterData.temperatureC != previousMeterData.temperatureC;
+    bool humidityPercentHasChanged = currentMeterData.humidityPercent != previousMeterData.humidityPercent;
+
+    if (temperatureCHasChanged || humidityPercentHasChanged) {
+
+        mQTTC.reportTempAndHumidity(currentMeterData);
+
+    }
+
+};
+
 void setup() {
     
     Serial.begin(SETTINGS_DATA_SERIAL_MONITOR_BAUD); // initialize serial monitor with 115200 baud
@@ -31,6 +77,8 @@ void setup() {
 }
  
 void loop() {
+    wifiManager.monitorWiFi();
+    webserver.handleClient();
     // Wait a few seconds between measurements.
     delay(2000);
 
@@ -65,7 +113,14 @@ void loop() {
     Serial.print(F("C "));
     Serial.print(hif);
     Serial.println(F("F"));
-    
+
+
+    if (wifiManager.isConnectedToWifi()) {
+        if (!mQTTC.isConnectedToMQTTBroker()) {
+            mQTTC.connectToMQTTBroker();
+        }
+        pubSubClient.loop();
+    }
 }
  
 
