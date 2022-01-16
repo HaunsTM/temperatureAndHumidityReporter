@@ -7,15 +7,15 @@ const char INFO_HTML[] PROGMEM = R"=====(
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Device info - Chicken house hatch</title>
+    <title>Device info - Temperature &amp; humidity reporter</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="content-type" content="text/html;charset=UTF-8">
     <link rel="stylesheet" href="/styleSimple_css">
 </head>
 <body>
-    <h1 class="title">Device info - Chicken house hatch</h1>
+    <h1 class="title">Device info - Temperature &amp; humidity reporter</h1>
     <h2>Software</h2>
-    <p>This software is intended for Arduino and compatible PLCs. The purpose is to use the PLC to enable control of a linear actuator (12 volt DC motor) via wifi / via pushbuttons, where the ultimate goal is to hoist up / down a guillotine - type door to open / close the entrance to a chicken house.</p>
+    <p>This software is intended for Arduino and compatible PLCs. The purpose is to use the PLC with.</p>
     <h3>Device</h3>
     <table>
         <thead>
@@ -76,22 +76,6 @@ const char INFO_HTML[] PROGMEM = R"=====(
                 <td><a data-bind="attr: { href: computed.href.closeHatch }"><span data-bind="text: computed.href.closeHatch"></span></td>
                 <td>Close hatch</td>
             </tr>
-            <tr>
-                <td><a data-bind="attr: { href: computed.href.openHatch }"><span data-bind="text: computed.href.openHatch"></td>
-                <td>Open hatch</td>
-            </tr>
-            <tr>
-                <td><a data-bind="attr: { href: computed.href.pullActuator }"><span data-bind="text: computed.href.pullActuator"></td>
-                <td>Contracting actuator piston</td>
-            </tr>
-            <tr>
-                <td><a data-bind="attr: { href: computed.href.stopActuator }"><span data-bind="text: computed.href.stopActuator"></td>
-                <td>Stop actuator engine</td>
-            </tr>
-            <tr>
-                <td><a data-bind="attr: { href: computed.href.pushActuator }"><span data-bind="text: computed.href.pushActuator"></td>
-                <td>Extends actuator piston</td>
-            </tr>
         </tbody>
     </table>
     <h4>Other</h4>
@@ -107,13 +91,12 @@ const char INFO_HTML[] PROGMEM = R"=====(
                 <td>
                     <a data-bind="attr: { href: computed.href.lidarSensorData }"><span data-bind="text: computed.href.lidarSensorData"></a>
                         <br /><br />
-                    Get current read measurement from LIDAR detector in a JSON:<br />
+                    Get current read measurement from sensor in a JSON:<br />
                 </td>
                 <td>
 <pre>{
-    "distanceToObjectCm":"xxx",
-    "strengthOrQualityOfReturnSignal":"yyy",
-    "temperatureInternalOfLidarSensorChipCelsius":"zzz"
+    "temperatureCelcius":"xxx",
+    "humidityPercent":"yyy",
 }</pre>
                 </td>
             </tr>
@@ -157,20 +140,12 @@ const char INFO_HTML[] PROGMEM = R"=====(
         </thead>
         <tbody>
             <tr>
-                <td>Action {UP, TURN_OFF, DOWN}</code></td>
-                <td><code><span data-bind="text: mqtt.publishTopics.actuatorAction"></span></code></td>
+                <td>Temperature.  Range: <code>0 - 1200</code></code></td>
+                <td><code><span data-bind="text: mqtt.publishTopics.temperatureC"></span></code></td>
             </tr>
             <tr>
                 <td>Distance to target in centimeters/millimeters. Range: <code>0 - 1200</code></td>
-                <td><code><span data-bind="text: mqtt.publishTopics.lidarDistanceToObjectCm"></span></code></td>
-            </tr>
-            <tr>
-                <td>Strength quality of returned signal in arbitrary units. Range: <code>-1, 0 - 32767</code></td>
-                <td><code><span data-bind="text: mqtt.publishTopics.lidarStrengthOrQualityOfReturnSignal"></span></td>
-            </tr>
-            <tr>
-                <td>Temperature of LIDAR sensor chip, range: <code>-25 &deg;C - 125 &deg;C</code></td>
-                <td><code><span data-bind="text: mqtt.publishTopics.lidarTemperatureInternalOfLidarSensorChipCelsius"></span></td>
+                <td><code><span data-bind="text: mqtt.publishTopics.humidityPercent"></span></code></td>
             </tr>
         </tbody>
     </table>
@@ -197,10 +172,8 @@ const char INFO_HTML[] PROGMEM = R"=====(
             };
             _self.mqtt = {
                 publishTopics: {
-                    actuatorAction: ko.observable(constJavascriptParameters.mqtt.publishTopics.actuatorAction),
-                    lidarDistanceToObjectCm: ko.observable(constJavascriptParameters.mqtt.publishTopics.lidarDistanceToObjectCm),
-                    lidarStrengthOrQualityOfReturnSignal: ko.observable(constJavascriptParameters.mqtt.publishTopics.lidarStrengthOrQualityOfReturnSignal),
-                    lidarTemperatureInternalOfLidarSensorChipCelsius: ko.observable(constJavascriptParameters.mqtt.publishTopics.lidarTemperatureInternalOfLidarSensorChipCelsius),
+                    temperatureC: ko.observable(constJavascriptParameters.mqtt.publishTopics.temperatureC),
+                    humidityPercent: ko.observable(constJavascriptParameters.mqtt.publishTopics.humidityPercent),
                 },
                 hostname: ko.observable(constJavascriptParameters.mqtt.hostname),
                 clientId: ko.observable(constJavascriptParameters.mqtt.clientId),
@@ -220,13 +193,8 @@ const char INFO_HTML[] PROGMEM = R"=====(
                 return {
                     href: {
                         base: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/" ; }),
-                        closeHatch: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/closeHatch" ; }),
-                        controls: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/" ; }),
                         info: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/info" }),
-                        lidarSensorData: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/lidarSensorData" }),
-                        pullActuator: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/pullActuator" }),
-                        pushActuator: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/pushActuator" }),
-                        stopActuator: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/stopActuator" }),
+                        sensorData: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/sensorData" }),
                     }
                 }
             })();

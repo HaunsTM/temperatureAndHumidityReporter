@@ -112,8 +112,8 @@ void HTTPWebServer::routeGetConstJavascriptParameters() {
 
             String("'mqtt' : {") +
                 String("'publishTopics': {") +
-                    String("'mqttPublishTopicTemperatureC': '") + _mqttPublishTopicTemperatureC + String("',") +
-                    String("'mqttPublishTopicHumidityPercent': '") + _mqttPublishTopicHumidityPercent + String("',") +
+                    String("'temperatureC': '") + _mqttPublishTopicTemperatureC + String("',") +
+                    String("'humidityPercent': '") + _mqttPublishTopicHumidityPercent + String("',") +
                 String("},") +
                 String("'hostname': '") + _mqttBrokerURL + String("',") +
                 String("'clientId': '") + randomMQTTClientId() + String("',") +

@@ -83,5 +83,7 @@ void MQTTCommunicator::reportTempAndHumidity(TemperatureAndHumidityData currentM
 
     _pubSubClient.publish(_mqttPublishTopicTemperatureC.c_str(), String(currentMeterData.temperatureC).c_str() );
     _pubSubClient.publish(_mqttPublishTopicHumidityPercent.c_str(), String(currentMeterData.humidityPercent).c_str() );
+
+    Serial.println(String(currentMeterData.temperatureC).c_str());
 };
 
