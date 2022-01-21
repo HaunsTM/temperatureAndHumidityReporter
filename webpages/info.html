@@ -50,8 +50,8 @@
             </tr>
             <tr>
                 <td>Humidity</td>
-                <td><code> 0 to 100 %RH/code></td>
-                <td><code>&plusmn;2 %</code></td>
+                <td><code> 0 to 100 %RH</code></td>
+                <td><code>&plusmn;2 %RH</code></td>
             </tr>
         </tbody>
     </table>
@@ -150,7 +150,7 @@
             </tr>
         </tbody>
     </table>
-    <nav class="navigation-links"><div><a data-bind="attr: { href: computed.href.measurements }">Measurements </a></div><div>|</div><div><a data-bind="attr: { href: computed.href.info }">Device info</a></div></nav>
+    <nav class="navigation-links"><div><a data-bind="attr: { href: computed.href.gauge }">Gauge </a></div><div>|</div><div><a data-bind="attr: { href: computed.href.info }">Device info</a></div></nav>
     <div class="info">
         <p>This software is distributed under <a href = "https://en.wikipedia.org/wiki/MIT_License">MIT License</a>. Source code on <a href="https://github.com/HaunsTM">Github - HaunsTM</a></p>
     </div>
@@ -193,6 +193,7 @@
                 return {
                     href: {
                         base: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/" ; }),
+                        gauge: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/gauge" }),
                         info: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/info" }),
                         sensorData: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/sensorData" }),
                     }

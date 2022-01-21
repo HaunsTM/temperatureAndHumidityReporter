@@ -37,6 +37,7 @@ private:
     
     void routeGetStyleSimpleCss();
 
+    void routeGetGauge();
     void routeGetInfo();
     void routeGetNotFound();
     

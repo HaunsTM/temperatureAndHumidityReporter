@@ -7,6 +7,7 @@
 #include "webpages/info_html.h"
 #include "webpages/knockout_js.h"
 #include "webpages/paho_js.h"
+#include "webpages/gauge_html.h"
 #include "webpages/simple_css.h"
 
 #include <ESP8266WiFi.h>
@@ -59,22 +60,26 @@ void HTTPWebServer::setUpRouteHandlers() {
 
     _server.on("/", [this]() { routeGetInfo(); });
 
+    _server.on("/gauge", [this]() { routeGetGauge(); });
     _server.on("/info", [this]() { routeGetInfo(); });
     
     _server.on("/javascriptAxios_js", [this]() { routeGetJavascriptAxiosJs(); });
     _server.on("/javascriptKnockout_js", [this]() { routeGetJavascriptKnockoutJs(); });
-    _server.on("/javascriptPaho_js", [this]() { routeGetJavascriptPahoJs(); });
     _server.on("/constJavascriptParameters_js", [this]() { routeGetConstJavascriptParameters(); });
 
-    _server.on("/styleSimple_css", [this]() { routeGetStyleSimpleCss(); });
-
     _server.on("/sensorData", [this]() { routeGetSensorData(); });
+    _server.on("/styleSimple_css", [this]() { routeGetStyleSimpleCss(); });
 
     _server.onNotFound([this]() { routeGetNotFound(); });
 }
 
 String HTTPWebServer::baseMQTTTopic() {
     return "<code>iot/temperature_and_humidity/</code>";
+}
+
+void HTTPWebServer::routeGetGauge() {    
+    const unsigned long SIZE_WITHOUT_TERMINATING_NULL_CHARACTER = sizeof(GAUGE_HTML) - 1;
+    _server.send_P(200, "text/html", GAUGE_HTML, SIZE_WITHOUT_TERMINATING_NULL_CHARACTER);
 }
 
 void HTTPWebServer::routeGetInfo() {    
@@ -92,10 +97,7 @@ void HTTPWebServer::routeGetJavascriptKnockoutJs() {
     _server.send_P(200, "text/javascript", KNOCKOUT_JS, SIZE_WITHOUT_TERMINATING_NULL_CHARACTER);
 }
 
-void HTTPWebServer::routeGetJavascriptPahoJs() {
-    const unsigned long SIZE_WITHOUT_TERMINATING_NULL_CHARACTER = sizeof(PAHO_JS) - 1;
-    _server.send_P(200, "text/javascript", PAHO_JS, SIZE_WITHOUT_TERMINATING_NULL_CHARACTER);
-}
+
 
 void HTTPWebServer::routeGetConstJavascriptParameters() {
     

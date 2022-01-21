@@ -2,7 +2,6 @@
 #ifndef INFO_HTML_H
 #define INFO_HTML_H
 
-
 const char INFO_HTML[] PROGMEM = R"=====(
 <!DOCTYPE html>
 <html>
@@ -39,6 +38,28 @@ const char INFO_HTML[] PROGMEM = R"=====(
             </tr>
         </tbody>
     </table>
+    <h4>Sensor</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Physical quantity</th>
+                <th>Range</th>
+                <th>Tolerance</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Temperature</td>
+                <td><code>-40 to 80 &deg;C</code></td>
+                <td><code>&plusmn;0.5 %</code></td>
+            </tr>
+            <tr>
+                <td>Humidity</td>
+                <td><code> 0 to 100 %RH</code></td>
+                <td><code>&plusmn;2 %RH</code></td>
+            </tr>
+        </tbody>
+    </table>
     <h3>Wifi</h3>
     <table>
         <thead>
@@ -63,22 +84,7 @@ const char INFO_HTML[] PROGMEM = R"=====(
         </tbody>
     </table>
     <h3>HTTP requests</h3>
-    <h4>Controls</h4>
-    <table>
-        <thead>
-            <tr>
-                <th>HTTP request</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><a data-bind="attr: { href: computed.href.closeHatch }"><span data-bind="text: computed.href.closeHatch"></span></td>
-                <td>Close hatch</td>
-            </tr>
-        </tbody>
-    </table>
-    <h4>Other</h4>
+    <h4>Sensor data</h4>
     <table>
         <thead>
             <tr>
@@ -89,7 +95,7 @@ const char INFO_HTML[] PROGMEM = R"=====(
         <tbody>
             <tr>
                 <td>
-                    <a data-bind="attr: { href: computed.href.lidarSensorData }"><span data-bind="text: computed.href.lidarSensorData"></a>
+                    <a data-bind="attr: { href: computed.href.sensorData }"><span data-bind="text: computed.href.lidarSensorData"></a>
                         <br /><br />
                     Get current read measurement from sensor in a JSON:<br />
                 </td>
@@ -134,23 +140,22 @@ const char INFO_HTML[] PROGMEM = R"=====(
     <table>
         <thead>
             <tr>
-                <th>Description</th>
+                <th>Physical quantity</th>
                 <th>Topic</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>Temperature.  Range: <code>0 - 1200</code></code></td>
+                <td>Temperature</td>
                 <td><code><span data-bind="text: mqtt.publishTopics.temperatureC"></span></code></td>
             </tr>
             <tr>
-                <td>Distance to target in centimeters/millimeters. Range: <code>0 - 1200</code></td>
+                <td>Humidity</td>
                 <td><code><span data-bind="text: mqtt.publishTopics.humidityPercent"></span></code></td>
             </tr>
         </tbody>
     </table>
-
-    <nav class="navigation-links"><div><a data-bind="attr: { href: computed.href.controls }">Controls </a></div><div>|</div><div><a data-bind="attr: { href: computed.href.info }">Device info</a></div></nav>
+    <nav class="navigation-links"><div><a data-bind="attr: { href: computed.href.gauge }">Gauge </a></div><div>|</div><div><a data-bind="attr: { href: computed.href.info }">Device info</a></div></nav>
     <div class="info">
         <p>This software is distributed under <a href = "https://en.wikipedia.org/wiki/MIT_License">MIT License</a>. Source code on <a href="https://github.com/HaunsTM">Github - HaunsTM</a></p>
     </div>
@@ -193,6 +198,7 @@ const char INFO_HTML[] PROGMEM = R"=====(
                 return {
                     href: {
                         base: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/" ; }),
+                        gauge: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/gauge" }),
                         info: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/info" }),
                         sensorData: ko.pureComputed( () => { return "//" + _self.wifi.localIP() + "/sensorData" }),
                     }
