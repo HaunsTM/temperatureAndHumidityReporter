@@ -101,7 +101,7 @@ void reportDataWithMQTT() {
     if (temperatureCHasChanged || humidityPercentHasChanged) {
 
         mQTTC.reportTempAndHumidity(currentMeterData);
-        currentMeterData = previousMeterData;
+        previousMeterData = currentMeterData;
     }
 };
 

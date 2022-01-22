@@ -143,7 +143,7 @@ void HTTPWebServer::routeGetStyleSimpleCss() {
 }
 
 void HTTPWebServer::routeGetSensorData() {
-
+    
     String sensorData = 
         String("{") +
             String("\"temperatureC\":") + String(_currentMeterData.temperatureC)  + String(",") +
