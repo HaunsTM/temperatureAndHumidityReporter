@@ -6,7 +6,7 @@
     <meta http-equiv="content-type" content="text/html;charset=UTF-8">
     <link rel="stylesheet" href="/styleSimple_css">
 </head>
-<body>
+<body onload="javascript:start();">
     <h1 class="title">Gauge - Temperature &amp; humidity reporter</h1>
     <h2>Software</h2>
     <p>This software is intended for Arduino and compatible PLCs. The purpose is to use the PLC with.</p>
@@ -17,6 +17,22 @@
         <p>This software is distributed under <a href = "https://en.wikipedia.org/wiki/MIT_License">MIT License</a>. Source code on <a href="https://github.com/HaunsTM">Github - HaunsTM</a></p>
     </div>
     
+
+    <script>
+        var websock;
+        function start() {
+            websock = new WebSocket('ws://' + window.location.hostname + ':81/');
+            websock.onopen = function(evt) { console.log('websock open'); };
+            websock.onclose = function(evt) { console.log('websock close'); };
+            websock.onerror = function(evt) { console.log(evt); };
+            websock.onmessage = function(evt) {
+                console.log(evt);
+            }
+            function buttonclick(e) {
+            websock.send(e.id);
+            }
+        }
+    </script>
     <script src="/javascriptKnockout_js">
     </script>
 

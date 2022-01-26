@@ -9,6 +9,7 @@
 #include "SettingsData.h"
 #include "TemperatureAndHumidityData.h"
 #include "TextMessageGenerator.h"
+#include <WebSocketsServer.h>
 #include "WifiManager.h"
  
 #define DHTPIN PIN_D4_GPIO2 //pin gpio 2 in sensor
@@ -32,6 +33,7 @@ WifiManager wifiManager( tMG, CREDENTIALS_JSON_STRING);
 WiFiClient wifiClient;
 PubSubClient pubSubClient(wifiClient);
 ESP8266WebServer eSP8266WebServer(SETTINGS_DATA_WEB_SERVER_PORT);
+WebSocketsServer webSocket = WebSocketsServer(SETTINGS_DATA_WEB_SOCKET_SERVER_PORT);
 
 HTTPWebServer webserver(
     eSP8266WebServer,
@@ -94,7 +96,8 @@ void collectData() {
 }
 
 void reportDataWithMQTT() {
-
+    mQTTC.reportTempAndHumidity(currentMeterData);
+    /*
     bool temperatureCHasChanged = currentMeterData.temperatureC != previousMeterData.temperatureC;
     bool humidityPercentHasChanged = currentMeterData.humidityPercent != previousMeterData.humidityPercent;
 
@@ -103,6 +106,23 @@ void reportDataWithMQTT() {
         mQTTC.reportTempAndHumidity(currentMeterData);
         previousMeterData = currentMeterData;
     }
+    */
+};
+
+void reportDataViaWebSocket() {
+Serial.println("1");
+webSocket.broadcastTXT("Simple broadcast client message!!");
+Serial.println("2");
+    /*
+    bool temperatureCHasChanged = currentMeterData.temperatureC != previousMeterData.temperatureC;
+    bool humidityPercentHasChanged = currentMeterData.humidityPercent != previousMeterData.humidityPercent;
+
+    if (temperatureCHasChanged || humidityPercentHasChanged) {
+
+        mQTTC.reportTempAndHumidity(currentMeterData);
+        previousMeterData = currentMeterData;
+    }
+    */
 };
 
 void temperatureAndHumidityReporterStateMachine() {
@@ -123,6 +143,7 @@ void temperatureAndHumidityReporterStateMachine() {
         
         case TemperatureAndHumidityReporterStates::REPORT:
             reportDataWithMQTT();
+            reportDataViaWebSocket();
             state = TemperatureAndHumidityReporterStates::REPORTED;
             break;
 
@@ -171,13 +192,14 @@ void setup() {
     
     wifiManager.initialize();
     webserver.initialize();
+    webSocket.begin();
     mQTTC.initialize();
 }
  
 void loop() {
     wifiManager.monitorWiFi();
     webserver.handleClient();
-
+webSocket.loop();
     temperatureAndHumidityReporterStateMachine();
 
     blinker.handleBlinker();
