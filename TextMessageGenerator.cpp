@@ -18,7 +18,7 @@ void TextMessageGenerator::initialize() {
 
 String TextMessageGenerator::deviceInfo() {
     const String message =
-        String("Chicken hatch PLC\n") +
+        String("Temperature and humidity provider PLC\n") +
         HEADER_UNDERLINE +
         String("Firmware version ") + _firmwareVersion + String("\n") +
         String("\n\n\n");

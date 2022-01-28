@@ -81,9 +81,9 @@ void MQTTCommunicator::connectToMQTTBroker() {
 
 void MQTTCommunicator::reportTempAndHumidity(TemperatureAndHumidityData currentMeterData) {
 
-    _pubSubClient.publish(_mqttPublishTopicTemperatureC.c_str(), String(currentMeterData.temperatureC).c_str() );
-    _pubSubClient.publish(_mqttPublishTopicHumidityPercent.c_str(), String(currentMeterData.humidityPercent).c_str() );
+    _pubSubClient.publish(_mqttPublishTopicTemperatureC.c_str(), String(currentMeterData.getTemperatureC()).c_str() );
+    _pubSubClient.publish(_mqttPublishTopicHumidityPercent.c_str(), String(currentMeterData.getHumidityPercent()).c_str() );
 
-    Serial.println(String(currentMeterData.temperatureC).c_str());
+    Serial.println(String(currentMeterData.getTemperatureC()).c_str());
 };
 

@@ -146,8 +146,8 @@ void HTTPWebServer::routeGetSensorData() {
     
     String sensorData = 
         String("{") +
-            String("\"temperatureC\":") + String(_currentMeterData.temperatureC)  + String(",") +
-            String("\"humidityPercent\":") + String(_currentMeterData.humidityPercent)   +
+            String("\"temperatureC\":") + String(_currentMeterData.getTemperatureC())  + String(",") +
+            String("\"humidityPercent\":") + String(_currentMeterData.getHumidityPercent())   +
         String("}");
     _server.send(200, "application/json", sensorData.c_str());
 }

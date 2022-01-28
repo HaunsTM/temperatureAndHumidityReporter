@@ -91,38 +91,43 @@ bool waitTime2SIsDue() {
 }
 
 void collectData() {
-    currentMeterData.temperatureC = dht.getTemperature();
-    currentMeterData.humidityPercent= dht.getHumidity();
+    currentMeterData.setTemperatureC(dht.getTemperature());
+    currentMeterData.setHumidityPercent(dht.getHumidity());
+}
+
+bool shouldReport() {
+    
+    bool hasChanged = false;
+    bool temperatureCHasChanged = currentMeterData.getTemperatureC() != previousMeterData.getTemperatureC();
+    bool humidityPercentHasChanged = currentMeterData.getHumidityPercent() != previousMeterData.getHumidityPercent();
+
+    if (temperatureCHasChanged || humidityPercentHasChanged) {
+        previousMeterData = currentMeterData;
+        hasChanged = true;
+    }
+
+    return hasChanged;
 }
 
 void reportDataWithMQTT() {
+
     mQTTC.reportTempAndHumidity(currentMeterData);
-    /*
-    bool temperatureCHasChanged = currentMeterData.temperatureC != previousMeterData.temperatureC;
-    bool humidityPercentHasChanged = currentMeterData.humidityPercent != previousMeterData.humidityPercent;
 
-    if (temperatureCHasChanged || humidityPercentHasChanged) {
-
-        mQTTC.reportTempAndHumidity(currentMeterData);
-        previousMeterData = currentMeterData;
-    }
-    */
 };
 
 void reportDataViaWebSocket() {
-Serial.println("1");
-webSocket.broadcastTXT("Simple broadcast client message!!");
-Serial.println("2");
-    /*
-    bool temperatureCHasChanged = currentMeterData.temperatureC != previousMeterData.temperatureC;
-    bool humidityPercentHasChanged = currentMeterData.humidityPercent != previousMeterData.humidityPercent;
+    String jSON = currentMeterData.toJSON();
 
-    if (temperatureCHasChanged || humidityPercentHasChanged) {
+    // Length (with one extra character for the null terminator)
+    int jSONLen = jSON.length() + 1; 
 
-        mQTTC.reportTempAndHumidity(currentMeterData);
-        previousMeterData = currentMeterData;
-    }
-    */
+    // Prepare the character array (the buffer) 
+    char char_array[jSONLen];
+
+    // Copy it over 
+    jSON.toCharArray(char_array, jSONLen);
+    webSocket.broadcastTXT(char_array);
+
 };
 
 void temperatureAndHumidityReporterStateMachine() {
@@ -142,8 +147,10 @@ void temperatureAndHumidityReporterStateMachine() {
             break;
         
         case TemperatureAndHumidityReporterStates::REPORT:
-            reportDataWithMQTT();
-            reportDataViaWebSocket();
+            if ( shouldReport() ) {
+                reportDataWithMQTT();
+                reportDataViaWebSocket();
+            }
             state = TemperatureAndHumidityReporterStates::REPORTED;
             break;
 
