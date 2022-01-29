@@ -17,6 +17,8 @@ private:
     TextMessageGenerator& _tMG;
     TemperatureAndHumidityData& _currentMeterData;
 
+    int _webSocketServerPort;
+
     String _mqttBrokerURL;
     int _mqttPort;
     String _mqttUsername;
@@ -43,7 +45,7 @@ private:
     
     void routeGetSensorData();
 public:
-    HTTPWebServer(ESP8266WebServer& server, TextMessageGenerator& tMG, TemperatureAndHumidityData& currentMeterData, String mqttBrokerURL, int mqttPort, String mqttUsername, String mqttPassword, String mqttPublishTopicTemperatureC, String mqttPublishTopicHumidityPercent);
+    HTTPWebServer(ESP8266WebServer& server, TextMessageGenerator& tMG, TemperatureAndHumidityData& currentMeterData, int webSocketServerPort, String mqttBrokerURL, int mqttPort, String mqttUsername, String mqttPassword, String mqttPublishTopicTemperatureC, String mqttPublishTopicHumidityPercent);
     
     ~HTTPWebServer();
 

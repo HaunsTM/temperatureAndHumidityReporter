@@ -26,7 +26,7 @@ const char GAUGE_HTML[] PROGMEM = R"=====(
     <script>
         var websock;
         function start() {
-            websock = new WebSocket('ws://' + window.location.hostname + ':81/');
+            websock = new WebSocket('ws://' + constJavascriptParameters.wifi.localIP + ':' + constJavascriptParameters.webSocket.serverPort + '/');
             websock.onopen = function(evt) { console.log('websock open'); };
             websock.onclose = function(evt) { console.log('websock close'); };
             websock.onerror = function(evt) { console.log(evt); };
@@ -53,6 +53,7 @@ const char GAUGE_HTML[] PROGMEM = R"=====(
                 macAddress: ko.observable(constJavascriptParameters.device.macAddress),
                 serialMonitorBaud: ko.observable(constJavascriptParameters.device.serialMonitorBaud),
             };
+
             _self.mqtt = {
                 publishTopics: {
                     temperatureC: ko.observable(constJavascriptParameters.mqtt.publishTopics.temperatureC),
@@ -67,11 +68,17 @@ const char GAUGE_HTML[] PROGMEM = R"=====(
                 },
                 port: ko.observable(constJavascriptParameters.mqtt.port)
             };
+            
+            _self.webSocket = {
+                serverPort: ko.observable(constJavascriptParameters.webSocket.serverPort),
+            };
+
             _self.wifi = {
                 channel: ko.observable(constJavascriptParameters.wifi.channel),
                 localIP: ko.observable(constJavascriptParameters.wifi.localIP),
                 SSID: ko.observable(constJavascriptParameters.wifi.SSID),
             };
+
             _self.computed = (function () {                
                 return {
                     href: {

@@ -13,11 +13,13 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
-HTTPWebServer::HTTPWebServer(ESP8266WebServer& server, TextMessageGenerator& tMG, TemperatureAndHumidityData& currentMeterData, String mqttBrokerURL, int mqttPort, String mqttUsername, String mqttPassword, String mqttPublishTopicTemperatureC, String mqttPublishTopicHumidityPercent)
+HTTPWebServer::HTTPWebServer(ESP8266WebServer& server, TextMessageGenerator& tMG, TemperatureAndHumidityData& currentMeterData, int webSocketServerPort, String mqttBrokerURL, int mqttPort, String mqttUsername, String mqttPassword, String mqttPublishTopicTemperatureC, String mqttPublishTopicHumidityPercent)
     :   _server(server),
         _tMG(tMG),
         _currentMeterData(currentMeterData)
 {    
+    _webSocketServerPort = webSocketServerPort; 
+
     _mqttBrokerURL = mqttBrokerURL;
     _mqttPort = mqttPort;
     _mqttUsername = mqttUsername;
@@ -125,6 +127,10 @@ void HTTPWebServer::routeGetConstJavascriptParameters() {
                     String("'keepAliveInterval': 60,") +
                 String("},") +
                 String("'port':") + String(_mqttPort) +
+            String("},") +
+
+            String("'webSocket' : {") +
+                    String("'serverPort': '") + String(_webSocketServerPort) + String("',") +
             String("},") +
             
             String("'wifi' : {") +
