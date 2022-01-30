@@ -2,7 +2,7 @@
 #define GAUGE_HTML_H
 
 const char GAUGE_HTML[] PROGMEM = R"=====(
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <title>Gauge - Temperature &amp; humidity reporter</title>
@@ -22,9 +22,17 @@ const char GAUGE_HTML[] PROGMEM = R"=====(
             padding: 0.5rem;
         }
       
-        .flex-container > div{
-            border: 1px solid black;
-            padding: 1rem;
+        .gauge-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .measurement-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16pt;
+            background-color: LightGrey;
+            color: Gray;
         }
     </style>
 </head>
@@ -36,17 +44,31 @@ const char GAUGE_HTML[] PROGMEM = R"=====(
     
     <div class="flex-container">
     
-        <div id="gaugeTemperature">
-            <canvas id="canvasThermometer"></canvas>
+        <div id="gaugeTemperature" class="gauge-container">
+            <div>
+                <h4>Temperature</h4>
+            </div>
+            <div>
+                <canvas id="canvasThermometer"></canvas>
+            </div>
+            <div class="measurement-value">
+                <span data-bind="text: measurement.temperatureC"></span><span>  &deg;C</span>
+            </div>
         </div>
 
-        <div id="gaugeHygrometer">
-            <canvas id="canvasHygrometer"></canvas>
+        <div id="gaugeHygrometer" class="gauge-container">
+            <div>
+                <h4>Humidity</h4>                
+            </div>
+            <div>                
+                <canvas id="canvasHygrometer"></canvas>
+            </div>
+            <div class="measurement-value">
+                <span data-bind="text: measurement.humidityPercent"></span><span>  %RH</span>       
+            </div>
         </div>
 
     </div>
-    <span data-bind="text: measurement.temperatureC"></span>
-    <span data-bind="text: measurement.humidityPercent"></span>
 
     <nav class="navigation-links"><div><a data-bind="attr: { href: computed.href.gauge }">Gauge </a></div><div>|</div><div><a data-bind="attr: { href: computed.href.info }">Device info</a></div></nav>
     <div class="info">
@@ -185,8 +207,12 @@ const char GAUGE_HTML[] PROGMEM = R"=====(
     
 
     <script>
-        var websock;
+        
+        viewModelKnockout.measurement.temperatureC('**.*');
+        viewModelKnockout.measurement.humidityPercent('**.*');
+
         function start() {
+            let websock;
             websock = new WebSocket('ws://' + constJavascriptParameters.wifi.localIP + ':' + constJavascriptParameters.webSocket.serverPort + '/');
             websock.onopen = function(evt) { console.log('websock open'); };
             websock.onclose = function(evt) { console.log('websock close'); };
