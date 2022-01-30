@@ -208,8 +208,8 @@ const char GAUGE_HTML[] PROGMEM = R"=====(
 
     <script>
         
-        viewModelKnockout.measurement.temperatureC('**.*');
-        viewModelKnockout.measurement.humidityPercent('**.*');
+        viewModelKnockout.measurement.temperatureC('-');
+        viewModelKnockout.measurement.humidityPercent('-');
 
         function start() {
             let websock;
