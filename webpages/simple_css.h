@@ -24,18 +24,6 @@ const char SIMPLE_CSS[] PROGMEM = R"=====(
     td a {
         font-size: 0.8rem;
     }
-    .button-symbol {
-        width: 3rem;
-        height: 3rem;
-        font-size: 2rem;
-        font-weight: bold;
-    }
-    .button-success {
-        background-color: LightGreen;
-    }
-    .button-error {
-        background-color: Tomato;
-    }
     .info {
         text-align: right;
         border-top: 1px solid DarkGray;

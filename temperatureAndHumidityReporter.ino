@@ -207,7 +207,8 @@ void setup() {
 void loop() {
     wifiManager.monitorWiFi();
     webserver.handleClient();
-webSocket.loop();
+    webSocket.loop();
+    
     temperatureAndHumidityReporterStateMachine();
 
     blinker.handleBlinker();

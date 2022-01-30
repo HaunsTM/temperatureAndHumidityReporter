@@ -27,8 +27,8 @@ String TemperatureAndHumidityData::toJSON()
 {
     const String message =
         String("{") +
-            String("temperatureC : ") + String(_temperatureC, 2) +
-            String(", humidityPercent : ") + String(_humidityPercent, 2) +
+            String("\"temperatureC\" : ") + String(_temperatureC, 2) +
+            String(", \"humidityPercent\" : ") + String(_humidityPercent, 2) +
         String("}");
     return message;
 }

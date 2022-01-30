@@ -6,7 +6,7 @@
 #include "webpages/axios_js.h"
 #include "webpages/info_html.h"
 #include "webpages/knockout_js.h"
-#include "webpages/paho_js.h"
+#include "webpages/gauge_js.h"
 #include "webpages/gauge_html.h"
 #include "webpages/simple_css.h"
 
@@ -66,6 +66,7 @@ void HTTPWebServer::setUpRouteHandlers() {
     _server.on("/info", [this]() { routeGetInfo(); });
     
     _server.on("/javascriptAxios_js", [this]() { routeGetJavascriptAxiosJs(); });
+    _server.on("/javascriptGauge_js", [this]() { routeGetJavascriptGaugeJs(); });
     _server.on("/javascriptKnockout_js", [this]() { routeGetJavascriptKnockoutJs(); });
     _server.on("/constJavascriptParameters_js", [this]() { routeGetConstJavascriptParameters(); });
 
@@ -92,6 +93,11 @@ void HTTPWebServer::routeGetInfo() {
 void HTTPWebServer::routeGetJavascriptAxiosJs() {
     const unsigned long SIZE_WITHOUT_TERMINATING_NULL_CHARACTER = sizeof(AXIOS_JS) - 1;
     _server.send_P(200, "text/javascript", AXIOS_JS, SIZE_WITHOUT_TERMINATING_NULL_CHARACTER);
+}
+
+void HTTPWebServer::routeGetJavascriptGaugeJs() {
+    const unsigned long SIZE_WITHOUT_TERMINATING_NULL_CHARACTER = sizeof(GAUGE_JS) - 1;
+    _server.send_P(200, "text/javascript", GAUGE_JS, SIZE_WITHOUT_TERMINATING_NULL_CHARACTER);
 }
 
 void HTTPWebServer::routeGetJavascriptKnockoutJs() {

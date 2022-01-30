@@ -33,8 +33,8 @@ private:
     void setUpRouteHandlers();
 
     void routeGetJavascriptAxiosJs();
+    void routeGetJavascriptGaugeJs();
     void routeGetJavascriptKnockoutJs();
-    void routeGetJavascriptPahoJs();
     void routeGetConstJavascriptParameters();
     
     void routeGetStyleSimpleCss();
