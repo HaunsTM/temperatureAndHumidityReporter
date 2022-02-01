@@ -95,7 +95,7 @@ const char INFO_HTML[] PROGMEM = R"=====(
         <tbody>
             <tr>
                 <td>
-                    <a data-bind="attr: { href: computed.href.sensorData }"><span data-bind="text: computed.href.lidarSensorData"></a>
+                    <a data-bind="attr: { href: computed.href.sensorData }"><span data-bind="text: computed.href.lidarSensorData" /></a>
                         <br /><br />
                     Get current read measurement from sensor in a JSON:<br />
                 </td>
@@ -155,7 +155,7 @@ const char INFO_HTML[] PROGMEM = R"=====(
             </tr>
         </tbody>
     </table>
-    <nav class="navigation-links"><div><a data-bind="attr: { href: computed.href.gauge }">Gauge </a></div><div>|</div><div><a data-bind="attr: { href: computed.href.info }">Device info</a></div></nav>
+    <nav class="navigation-links"><div><a data-bind="attr: { href: computed.href.gauge }">Gauge </a></div><div>|</div><div><a data-bind="attr: { href: computed.href.info }" style="text-decoration: none;">Device info</a></div></nav>
     <div class="info">
         <p>This software is distributed under <a href = "https://en.wikipedia.org/wiki/MIT_License">MIT License</a>. Source code on <a href="https://github.com/HaunsTM">Github - HaunsTM</a></p>
     </div>

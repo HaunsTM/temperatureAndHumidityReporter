@@ -11,6 +11,7 @@ const char GAUGE_HTML[] PROGMEM = R"=====(
     <link rel="stylesheet" href="/styleSimple_css">
     
     <style>
+
         .flex-container {
             display: flex;
 
@@ -21,15 +22,25 @@ const char GAUGE_HTML[] PROGMEM = R"=====(
             height: 100%;
             padding: 0.5rem;
         }
+
+        .flex-container > div {
+            padding: 0 2rem;
+        }
       
         .gauge-container {
             display: flex;
             flex-direction: column;
             align-items: center;
+            
+            padding: 0.5rem 0.5rem;
+            border: 1px solid LightGrey;
+            border-radius: 0.25rem;
         }
 
         .measurement-value {
             font-family: 'Orbitron', sans-serif;
+            padding: 0.1rem 0.5rem;
+            border-radius: 0.25rem;
             font-size: 16pt;
             background-color: LightGrey;
             color: Gray;
@@ -44,33 +55,37 @@ const char GAUGE_HTML[] PROGMEM = R"=====(
     
     <div class="flex-container">
     
-        <div id="gaugeTemperature" class="gauge-container">
-            <div>
-                <h4>Temperature</h4>
-            </div>
-            <div>
-                <canvas id="canvasThermometer"></canvas>
-            </div>
-            <div class="measurement-value">
-                <span data-bind="text: measurement.temperatureC"></span><span>  &deg;C</span>
+        <div>
+            <div id="gaugeTemperature" class="gauge-container">
+                <div>
+                    <h4>Temperature</h4>
+                </div>
+                <div>
+                    <canvas id="canvasThermometer"></canvas>
+                </div>
+                <div class="measurement-value">
+                    <span data-bind="text: measurement.temperatureC"></span><span>  &deg;C</span>
+                </div>
             </div>
         </div>
 
-        <div id="gaugeHygrometer" class="gauge-container">
-            <div>
-                <h4>Humidity</h4>                
-            </div>
-            <div>                
-                <canvas id="canvasHygrometer"></canvas>
-            </div>
-            <div class="measurement-value">
-                <span data-bind="text: measurement.humidityPercent"></span><span>  %RH</span>       
-            </div>
+        <div>
+            <div id="gaugeHygrometer" class="gauge-container">
+                <div>
+                    <h4>Humidity</h4>                
+                </div>
+                <div>                
+                    <canvas id="canvasHygrometer"></canvas>
+                </div>
+                <div class="measurement-value">
+                    <span data-bind="text: measurement.humidityPercent"></span><span>  %RH</span>       
+                </div>
+            </div>            
         </div>
 
     </div>
 
-    <nav class="navigation-links"><div><a data-bind="attr: { href: computed.href.gauge }">Gauge </a></div><div>|</div><div><a data-bind="attr: { href: computed.href.info }">Device info</a></div></nav>
+    <nav class="navigation-links"><div><a data-bind="attr: { href: computed.href.gauge }" style="text-decoration: none;">Gauge </a></div><div>|</div><div><a data-bind="attr: { href: computed.href.info }">Device info</a></div></nav>
     <div class="info">
         <p>This software is distributed under <a href = "https://en.wikipedia.org/wiki/MIT_License">MIT License</a>. Source code on <a href="https://github.com/HaunsTM">Github - HaunsTM</a></p>
     </div>
