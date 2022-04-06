@@ -95,7 +95,7 @@ const char INFO_HTML[] PROGMEM = R"=====(
         <tbody>
             <tr>
                 <td>
-                    <a data-bind="attr: { href: computed.href.sensorData }"><span data-bind="text: computed.href.lidarSensorData" /></a>
+                    <a data-bind="attr: { href: computed.href.sensorData }"><span data-bind="text: computed.href.sensorData" /></a>
                         <br /><br />
                     Get current read measurement from sensor in a JSON:<br />
                 </td>
